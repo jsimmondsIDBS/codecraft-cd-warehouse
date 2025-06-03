@@ -176,6 +176,21 @@ public class CDListingTest
         final List<CD> cds = cdListing.get();
 
         assertEquals(1, cds.size());
+    }
 
+    @Test
+    public void purchaseCDsWithTwoInStockAddedAtOnceRemainsInList()
+    {
+        final CDListing cdListing = new CDListing();
+        final CD cd = new CD("ABC", "Artist1");
+        cdListing.add(cd, 2);
+
+        final boolean transaction1Succeeds = cdListing.purchase(cd);
+        final boolean transaction2Succeeds = cdListing.purchase(cd);
+        final boolean transaction3Succeeds = cdListing.purchase(cd);
+
+        assertTrue(transaction1Succeeds);
+        assertTrue(transaction2Succeeds);
+        assertFalse(transaction3Succeeds);
     }
 }

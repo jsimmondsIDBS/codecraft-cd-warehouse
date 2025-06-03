@@ -34,6 +34,14 @@ public class CDListing
         }
     }
 
+    public void add(CD cd, int quantity)
+    {
+        for (int i = 0; i < quantity; i++)
+        {
+            add(cd);
+        }
+    }
+
     public CD searchByTitle(String title)
     {
         return get().stream()
@@ -52,7 +60,7 @@ public class CDListing
 
     public boolean purchase(CD cd)
     {
-        if (stock.containsKey(cd))
+        if (stock.containsKey(cd) && stock.get(cd) > 0)
         {
             final int currentStockCount = stock.get(cd);
             stock.put(cd, currentStockCount - 1);
