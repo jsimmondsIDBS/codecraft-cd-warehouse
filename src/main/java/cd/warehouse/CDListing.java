@@ -13,6 +13,12 @@ import java.util.Map;
 public class CDListing
 {
     private final Map<CD, Integer> stock = new HashMap<>();
+    private final ExternalProvider externalProvider;
+
+    public CDListing(ExternalProvider externalProvider)
+    {
+        this.externalProvider = externalProvider;
+    }
 
     public List<CD> get()
     {
@@ -62,6 +68,12 @@ public class CDListing
     {
         if (stock.containsKey(cd) && stock.get(cd) > 0)
         {
+            final boolean isTransactionSuccessful = externalProvider.transaction();
+            if (!isTransactionSuccessful)
+            {
+                return false;
+            }
+
             final int currentStockCount = stock.get(cd);
             stock.put(cd, currentStockCount - 1);
             return true;

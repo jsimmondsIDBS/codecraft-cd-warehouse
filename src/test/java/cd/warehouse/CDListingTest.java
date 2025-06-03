@@ -15,17 +15,26 @@ import java.util.List;
 
 public class CDListingTest
 {
+    private final ExternalProvider EXTERNAL_PROVIDER = new ExternalProvider()
+    {
+        @Override
+        public boolean transaction()
+        {
+            return true;
+        }
+    };
+
     @Test
     public void testEmptyListing()
     {
-        final CDListing cdListing = new CDListing();
+        final CDListing cdListing = new CDListing(EXTERNAL_PROVIDER);
         assertEquals(0, cdListing.get().size());
     }
 
     @Test
     public void testCdListOfOne()
     {
-        final CDListing cdListing = new CDListing();
+        final CDListing cdListing = new CDListing(EXTERNAL_PROVIDER);
         cdListing.add(new CD("ABC", "Artist1"));
         assertEquals(1, cdListing.get().size());
     }
@@ -33,7 +42,7 @@ public class CDListingTest
     @Test
     public void canGetTitleFromCDInListing()
     {
-        final CDListing cdListing = new CDListing();
+        final CDListing cdListing = new CDListing(EXTERNAL_PROVIDER);
         cdListing.add(new CD("ABC", "Artist1"));
         assertEquals("ABC", cdListing.get().get(0).getTitle());
     }
@@ -41,7 +50,7 @@ public class CDListingTest
     @Test
     public void canGetArtistFromCDInListing()
     {
-        final CDListing cdListing = new CDListing();
+        final CDListing cdListing = new CDListing(EXTERNAL_PROVIDER);
         cdListing.add(new CD("ABC", "Artist1"));
         assertEquals("Artist1", cdListing.get().get(0).getArtist());
     }
@@ -49,7 +58,7 @@ public class CDListingTest
     @Test
     public void canAddMultipleCDs()
     {
-        final CDListing cdListing = new CDListing();
+        final CDListing cdListing = new CDListing(EXTERNAL_PROVIDER);
         cdListing.add(new CD("ABC", "Artist1"));
         cdListing.add(new CD("XYZ", "Artist2"));
         assertEquals(2, cdListing.get().size());
@@ -58,7 +67,7 @@ public class CDListingTest
     @Test
     public void searchListingByTitle()
     {
-        final CDListing cdListing = new CDListing();
+        final CDListing cdListing = new CDListing(EXTERNAL_PROVIDER);
         cdListing.add(new CD("ABC", "Artist1"));
 
         final CD result = cdListing.searchByTitle("ABC");
@@ -69,7 +78,7 @@ public class CDListingTest
     @Test
     public void searchListingContainingMultipleCDsByTitle()
     {
-        final CDListing cdListing = new CDListing();
+        final CDListing cdListing = new CDListing(EXTERNAL_PROVIDER);
         cdListing.add(new CD("XYZ", "Artist2"));
         cdListing.add(new CD("ABC", "Artist1"));
 
@@ -81,7 +90,7 @@ public class CDListingTest
     @Test
     public void searchListingByTitleReturnsNullIfNotPresent()
     {
-        final CDListing cdListing = new CDListing();
+        final CDListing cdListing = new CDListing(EXTERNAL_PROVIDER);
         cdListing.add(new CD("ABC", "Artist1"));
 
         final CD result = cdListing.searchByTitle("DEF");
@@ -92,7 +101,7 @@ public class CDListingTest
     @Test
     public void searchListingByArtistReturnsNullIfNotPresent()
     {
-        final CDListing cdListing = new CDListing();
+        final CDListing cdListing = new CDListing(EXTERNAL_PROVIDER);
         cdListing.add(new CD("ABC", "Artist1"));
 
         final CD result = cdListing.searchByArtist("DEF");
@@ -103,7 +112,7 @@ public class CDListingTest
     @Test
     public void searchListingByArtist()
     {
-        final CDListing cdListing = new CDListing();
+        final CDListing cdListing = new CDListing(EXTERNAL_PROVIDER);
         cdListing.add(new CD("ABC", "Artist1"));
 
         final CD result = cdListing.searchByArtist("Artist1");
@@ -114,7 +123,7 @@ public class CDListingTest
     @Test
     public void purchaseCD()
     {
-        final CDListing cdListing = new CDListing();
+        final CDListing cdListing = new CDListing(EXTERNAL_PROVIDER);
         final CD cd = new CD("ABC", "Artist1");
         cdListing.add(cd);
 
@@ -126,7 +135,7 @@ public class CDListingTest
     @Test
     public void purchaseCDThatDoesNotExistInListing()
     {
-        final CDListing cdListing = new CDListing();
+        final CDListing cdListing = new CDListing(EXTERNAL_PROVIDER);
         final CD cd = new CD("ABC", "Artist1");
         cdListing.add(cd);
 
@@ -139,7 +148,7 @@ public class CDListingTest
     @Test
     public void purchaseCDThatHasOneInStockRemovesFromListing()
     {
-        final CDListing cdListing = new CDListing();
+        final CDListing cdListing = new CDListing(EXTERNAL_PROVIDER);
         final CD cd = new CD("ABC", "Artist1");
         cdListing.add(cd);
         cdListing.purchase(cd);
@@ -152,7 +161,7 @@ public class CDListingTest
     @Test
     public void purchaseCDWithTwoInStockDoesNotRemoveFromListing()
     {
-        final CDListing cdListing = new CDListing();
+        final CDListing cdListing = new CDListing(EXTERNAL_PROVIDER);
         final CD cd = new CD("ABC", "Artist1");
         cdListing.add(cd);
         cdListing.add(cd);
@@ -166,7 +175,7 @@ public class CDListingTest
     @Test
     public void purchaseCDWithThreeInStockReturnsOnlyOneInListing()
     {
-        final CDListing cdListing = new CDListing();
+        final CDListing cdListing = new CDListing(EXTERNAL_PROVIDER);
         final CD cd = new CD("ABC", "Artist1");
         cdListing.add(cd);
         cdListing.add(cd);
@@ -181,7 +190,7 @@ public class CDListingTest
     @Test
     public void purchaseCDsWithTwoInStockAddedAtOnceRemainsInList()
     {
-        final CDListing cdListing = new CDListing();
+        final CDListing cdListing = new CDListing(EXTERNAL_PROVIDER);
         final CD cd = new CD("ABC", "Artist1");
         cdListing.add(cd, 2);
 
@@ -192,5 +201,25 @@ public class CDListingTest
         assertTrue(transaction1Succeeds);
         assertTrue(transaction2Succeeds);
         assertFalse(transaction3Succeeds);
+    }
+
+    @Test
+    public void purchasingFailsInsufficientFunds()
+    {
+        final ExternalProvider externalProvider = new ExternalProvider()
+        {
+            @Override
+            public boolean transaction()
+            {
+                return false;
+            }
+        };
+        final CDListing cdListing = new CDListing(externalProvider);
+        final CD cd = new CD("ABC", "Artist1");
+        cdListing.add(cd);
+
+        final boolean successful = cdListing.purchase(cd);
+
+        assertFalse(successful);
     }
 }
