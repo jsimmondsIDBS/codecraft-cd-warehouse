@@ -5,25 +5,38 @@
 package cd.warehouse;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class CDListing
 {
-    private final List<CD> listing = new ArrayList<>();
+    private final Map<CD, Integer> stock = new HashMap<>();
 
-    List<CD> get()
+    public List<CD> get()
     {
-        return listing;
+        return stock.keySet().stream()
+                .filter(cd -> stock.get(cd) > 0)
+                .toList();
     }
 
     public void add(CD cd)
     {
-        listing.add(cd);
+        if (!stock.containsKey(cd))
+        {
+            stock.put(cd, 1);
+        }
+        else
+        {
+            final int currentStockCount = stock.get(cd);
+            stock.put(cd, currentStockCount + 1);
+        }
     }
 
     public CD searchByTitle(String title)
     {
-        return listing.stream()
+        return get().stream()
                 .filter(cd -> cd.getTitle().equals(title))
                 .findFirst()
                 .orElse(null);
@@ -31,7 +44,7 @@ public class CDListing
 
     public CD searchByArtist(String artist)
     {
-        return listing.stream()
+        return get().stream()
                 .filter(cd -> cd.getArtist().equals(artist))
                 .findFirst()
                 .orElse(null);
@@ -39,6 +52,13 @@ public class CDListing
 
     public boolean purchase(CD cd)
     {
-        return listing.remove(cd);
+        if (stock.containsKey(cd))
+        {
+            final int currentStockCount = stock.get(cd);
+            stock.put(cd, currentStockCount - 1);
+            return true;
+        }
+
+        return false;
     }
 }

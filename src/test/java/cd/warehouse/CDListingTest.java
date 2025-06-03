@@ -148,4 +148,34 @@ public class CDListingTest
 
         assertEquals(0, cds.size());
     }
+
+    @Test
+    public void purchaseCDWithTwoInStockDoesNotRemoveFromListing()
+    {
+        final CDListing cdListing = new CDListing();
+        final CD cd = new CD("ABC", "Artist1");
+        cdListing.add(cd);
+        cdListing.add(cd);
+        cdListing.purchase(cd);
+
+        final List<CD> cds = cdListing.get();
+
+        assertEquals(cd, cds.get(0));
+    }
+
+    @Test
+    public void purchaseCDWithThreeInStockReturnsOnlyOneInListing()
+    {
+        final CDListing cdListing = new CDListing();
+        final CD cd = new CD("ABC", "Artist1");
+        cdListing.add(cd);
+        cdListing.add(cd);
+        cdListing.add(cd);
+        cdListing.purchase(cd);
+
+        final List<CD> cds = cdListing.get();
+
+        assertEquals(1, cds.size());
+
+    }
 }
