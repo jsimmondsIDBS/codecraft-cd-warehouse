@@ -35,8 +35,7 @@ public class CDListing
         }
         else
         {
-            final int currentStockCount = stock.get(cd);
-            stock.put(cd, currentStockCount + 1);
+            incrementStock(cd);
         }
     }
 
@@ -66,7 +65,8 @@ public class CDListing
 
     public boolean purchase(CD cd)
     {
-        if (stock.containsKey(cd) && stock.get(cd) > 0)
+        final boolean isCDInStock = stock.containsKey(cd) && stock.get(cd) > 0;
+        if (isCDInStock)
         {
             final boolean isTransactionSuccessful = externalProvider.transaction();
             if (!isTransactionSuccessful)
@@ -74,11 +74,20 @@ public class CDListing
                 return false;
             }
 
-            final int currentStockCount = stock.get(cd);
-            stock.put(cd, currentStockCount - 1);
+            decrementStock(cd);
             return true;
         }
 
         return false;
+    }
+
+    private void incrementStock(CD cd)
+    {
+        stock.compute(cd, (k, currentStockCount) -> currentStockCount + 1);
+    }
+
+    private void decrementStock(CD cd)
+    {
+        stock.compute(cd, (k, currentStockCount) -> currentStockCount - 1);
     }
 }

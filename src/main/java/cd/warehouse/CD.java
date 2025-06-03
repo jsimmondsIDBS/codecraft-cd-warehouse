@@ -4,11 +4,6 @@
  */
 package cd.warehouse;
 
-/**
- * @author jsimmonds
- *
- * <p><b>(C) Copyright 2025 IDBS Ltd</b></p>
- */
 public class CD
 {
     private final String title;
