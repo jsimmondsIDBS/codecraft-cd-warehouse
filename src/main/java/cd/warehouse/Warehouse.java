@@ -9,11 +9,13 @@ import java.util.List;
 public class Warehouse
 {
     private final ExternalProvider externalProvider;
+    private final Charts charts;
     private final Stock stock = new Stock();
 
-    public Warehouse(ExternalProvider externalProvider)
+    public Warehouse(ExternalProvider externalProvider, Charts charts)
     {
         this.externalProvider = externalProvider;
+        this.charts = charts;
     }
 
     public List<CD> getListing()
@@ -39,7 +41,13 @@ public class Warehouse
 
     public boolean purchase(CD cd)
     {
-        if (stock.isInStock(cd))
+        return purchase(cd, 1);
+    }
+
+
+    public boolean purchase(CD cd, int quantity)
+    {
+        if (stock.isInStock(cd, quantity))
         {
             final boolean isPaymentSuccessful = externalProvider.processPayment();
             if (!isPaymentSuccessful)
@@ -47,12 +55,14 @@ public class Warehouse
                 return false;
             }
 
-            stock.decrement(cd);
+            charts.notifyOfSale(cd.getArtist(), cd.getTitle(), quantity);
+            for (int i = 0; i < quantity; i++)
+            {
+                stock.decrement(cd);
+            }
             return true;
         }
 
         return false;
     }
-
-
 }

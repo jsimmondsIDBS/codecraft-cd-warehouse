@@ -38,7 +38,13 @@ public class Stock {
                 .toList();
     }
 
-    boolean isInStock(CD cd) {
+    boolean isInStock(CD cd)
+    {
         return this.stock.containsKey(cd) && this.stock.get(cd) > 0;
+    }
+
+    boolean isInStock(CD cd, int quantity)
+    {
+        return this.stock.containsKey(cd) && this.stock.get(cd) >= quantity;
     }
 }

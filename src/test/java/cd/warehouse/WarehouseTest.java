@@ -8,6 +8,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import org.junit.Test;
 
@@ -15,6 +18,8 @@ import java.util.List;
 
 public class WarehouseTest
 {
+    private final Charts charts = mock(Charts.class);
+
     private final ExternalProvider EXTERNAL_PROVIDER = new ExternalProvider()
     {
         @Override
@@ -27,48 +32,48 @@ public class WarehouseTest
     @Test
     public void testEmptyListing()
     {
-        final Warehouse warehouse = new Warehouse(EXTERNAL_PROVIDER);
+        final Warehouse warehouse = new Warehouse(EXTERNAL_PROVIDER, charts);
         assertEquals(0, warehouse.getListing().size());
     }
 
     @Test
     public void testCdListOfOne()
     {
-        final Warehouse warehouse = new Warehouse(EXTERNAL_PROVIDER);
-        warehouse.add(new CD("ABC", "Artist1"));
+        final Warehouse warehouse = new Warehouse(EXTERNAL_PROVIDER, charts);
+        warehouse.add(new CD("ABC", "Artist1", 9.99));
         assertEquals(1, warehouse.getListing().size());
     }
 
     @Test
     public void canGetListingTitleFromCDInListing()
     {
-        final Warehouse warehouse = new Warehouse(EXTERNAL_PROVIDER);
-        warehouse.add(new CD("ABC", "Artist1"));
+        final Warehouse warehouse = new Warehouse(EXTERNAL_PROVIDER, charts);
+        warehouse.add(new CD("ABC", "Artist1", 9.99));
         assertEquals("ABC", warehouse.getListing().get(0).getTitle());
     }
 
     @Test
     public void canGetListingArtistFromCDInListing()
     {
-        final Warehouse warehouse = new Warehouse(EXTERNAL_PROVIDER);
-        warehouse.add(new CD("ABC", "Artist1"));
+        final Warehouse warehouse = new Warehouse(EXTERNAL_PROVIDER, charts);
+        warehouse.add(new CD("ABC", "Artist1", 9.99));
         assertEquals("Artist1", warehouse.getListing().get(0).getArtist());
     }
 
     @Test
     public void canAddMultipleCDs()
     {
-        final Warehouse warehouse = new Warehouse(EXTERNAL_PROVIDER);
-        warehouse.add(new CD("ABC", "Artist1"));
-        warehouse.add(new CD("XYZ", "Artist2"));
+        final Warehouse warehouse = new Warehouse(EXTERNAL_PROVIDER, charts);
+        warehouse.add(new CD("ABC", "Artist1", 9.99));
+        warehouse.add(new CD("XYZ", "Artist2", 9.99));
         assertEquals(2, warehouse.getListing().size());
     }
 
     @Test
     public void searchListingByTitle()
     {
-        final Warehouse warehouse = new Warehouse(EXTERNAL_PROVIDER);
-        warehouse.add(new CD("ABC", "Artist1"));
+        final Warehouse warehouse = new Warehouse(EXTERNAL_PROVIDER, charts);
+        warehouse.add(new CD("ABC", "Artist1", 9.99));
 
         final CD result = warehouse.search("ABC");
 
@@ -78,9 +83,9 @@ public class WarehouseTest
     @Test
     public void searchListingContainingMultipleCDsByTitle()
     {
-        final Warehouse warehouse = new Warehouse(EXTERNAL_PROVIDER);
-        warehouse.add(new CD("XYZ", "Artist2"));
-        warehouse.add(new CD("ABC", "Artist1"));
+        final Warehouse warehouse = new Warehouse(EXTERNAL_PROVIDER, charts);
+        warehouse.add(new CD("XYZ", "Artist2", 9.99));
+        warehouse.add(new CD("ABC", "Artist1", 9.99));
 
         final CD result = warehouse.search("ABC");
 
@@ -90,8 +95,8 @@ public class WarehouseTest
     @Test
     public void searchListingByTitleReturnsNullIfNotPresent()
     {
-        final Warehouse warehouse = new Warehouse(EXTERNAL_PROVIDER);
-        warehouse.add(new CD("ABC", "Artist1"));
+        final Warehouse warehouse = new Warehouse(EXTERNAL_PROVIDER, charts);
+        warehouse.add(new CD("ABC", "Artist1", 9.99));
 
         final CD result = warehouse.search("DEF");
 
@@ -101,8 +106,8 @@ public class WarehouseTest
     @Test
     public void searchListingByArtistReturnsNullIfNotPresent()
     {
-        final Warehouse warehouse = new Warehouse(EXTERNAL_PROVIDER);
-        warehouse.add(new CD("ABC", "Artist1"));
+        final Warehouse warehouse = new Warehouse(EXTERNAL_PROVIDER, charts);
+        warehouse.add(new CD("ABC", "Artist1", 9.99));
 
         final CD result = warehouse.search("DEF");
 
@@ -112,8 +117,8 @@ public class WarehouseTest
     @Test
     public void searchListingByArtist()
     {
-        final Warehouse warehouse = new Warehouse(EXTERNAL_PROVIDER);
-        warehouse.add(new CD("ABC", "Artist1"));
+        final Warehouse warehouse = new Warehouse(EXTERNAL_PROVIDER, charts);
+        warehouse.add(new CD("ABC", "Artist1", 9.99));
 
         final CD result = warehouse.search("Artist1");
 
@@ -122,9 +127,9 @@ public class WarehouseTest
 
     @Test
     public void search() {
-        final Warehouse warehouse = new Warehouse(EXTERNAL_PROVIDER);
-        warehouse.add(new CD("ABC", "Artist1"));
-        warehouse.add(new CD("XYZ", "Artist2"));
+        final Warehouse warehouse = new Warehouse(EXTERNAL_PROVIDER, charts);
+        warehouse.add(new CD("ABC", "Artist1", 9.99));
+        warehouse.add(new CD("XYZ", "Artist2", 9.99));
 
         final CD result = warehouse.search("XYZ");
 
@@ -135,8 +140,8 @@ public class WarehouseTest
     @Test
     public void purchaseCD()
     {
-        final Warehouse warehouse = new Warehouse(EXTERNAL_PROVIDER);
-        final CD cd = new CD("ABC", "Artist1");
+        final Warehouse warehouse = new Warehouse(EXTERNAL_PROVIDER, charts);
+        final CD cd = new CD("ABC", "Artist1", 9.99);
         warehouse.add(cd);
 
         final boolean success = warehouse.purchase(cd);
@@ -147,11 +152,11 @@ public class WarehouseTest
     @Test
     public void purchaseCDThatDoesNotExistInListing()
     {
-        final Warehouse warehouse = new Warehouse(EXTERNAL_PROVIDER);
-        final CD cd = new CD("ABC", "Artist1");
+        final Warehouse warehouse = new Warehouse(EXTERNAL_PROVIDER, charts);
+        final CD cd = new CD("ABC", "Artist1", 9.99);
         warehouse.add(cd);
 
-        final CD cdNotInListing = new CD("DEF", "Artist99");
+        final CD cdNotInListing = new CD("DEF", "Artist99", 9.99);
         final boolean success = warehouse.purchase(cdNotInListing);
 
         assertFalse(success);
@@ -160,8 +165,8 @@ public class WarehouseTest
     @Test
     public void purchaseCDThatHasOneInStockRemovesFromListing()
     {
-        final Warehouse warehouse = new Warehouse(EXTERNAL_PROVIDER);
-        final CD cd = new CD("ABC", "Artist1");
+        final Warehouse warehouse = new Warehouse(EXTERNAL_PROVIDER, charts);
+        final CD cd = new CD("ABC", "Artist1", 9.99);
         warehouse.add(cd);
         warehouse.purchase(cd);
 
@@ -173,8 +178,8 @@ public class WarehouseTest
     @Test
     public void purchaseCDWithTwoInStockDoesNotRemoveFromListing()
     {
-        final Warehouse warehouse = new Warehouse(EXTERNAL_PROVIDER);
-        final CD cd = new CD("ABC", "Artist1");
+        final Warehouse warehouse = new Warehouse(EXTERNAL_PROVIDER, charts);
+        final CD cd = new CD("ABC", "Artist1", 9.99);
         warehouse.add(cd);
         warehouse.add(cd);
         warehouse.purchase(cd);
@@ -187,8 +192,8 @@ public class WarehouseTest
     @Test
     public void purchaseCDWithThreeInStockReturnsOnlyOneInListing()
     {
-        final Warehouse warehouse = new Warehouse(EXTERNAL_PROVIDER);
-        final CD cd = new CD("ABC", "Artist1");
+        final Warehouse warehouse = new Warehouse(EXTERNAL_PROVIDER, charts);
+        final CD cd = new CD("ABC", "Artist1", 9.99);
         warehouse.add(cd);
         warehouse.add(cd);
         warehouse.add(cd);
@@ -202,8 +207,8 @@ public class WarehouseTest
     @Test
     public void purchaseCDsWithTwoInStockAddedAtOnceRemainsInList()
     {
-        final Warehouse warehouse = new Warehouse(EXTERNAL_PROVIDER);
-        final CD cd = new CD("ABC", "Artist1");
+        final Warehouse warehouse = new Warehouse(EXTERNAL_PROVIDER, charts);
+        final CD cd = new CD("ABC", "Artist1", 9.99);
         warehouse.add(cd, 2);
 
         final boolean transaction1Succeeds = warehouse.purchase(cd);
@@ -226,12 +231,96 @@ public class WarehouseTest
                 return false;
             }
         };
-        final Warehouse warehouse = new Warehouse(externalProvider);
-        final CD cd = new CD("ABC", "Artist1");
+        final Warehouse warehouse = new Warehouse(externalProvider, charts);
+        final CD cd = new CD("ABC", "Artist1", 9.99);
         warehouse.add(cd);
 
         final boolean successful = warehouse.purchase(cd);
 
         assertFalse(successful);
+    }
+
+    @Test
+    public void purchasingCDNotifiesCharts()
+    {
+        final Warehouse warehouse = new Warehouse(EXTERNAL_PROVIDER, charts);
+        final CD cd = new CD("ABC", "Artist1", 9.99);
+        warehouse.add(cd);
+
+        warehouse.purchase(cd);
+
+        verify(charts).notifyOfSale("Artist1", "ABC", 1);
+    }
+
+    @Test
+    public void purchasingTwoCDsWhenOnlyOneInStock()
+    {
+        final Warehouse warehouse = new Warehouse(EXTERNAL_PROVIDER, charts);
+        final CD cd = new CD("ABC", "Artist1", 9.99);
+        warehouse.add(cd);
+
+        final boolean isTransactionSuccessful = warehouse.purchase(cd, 2);
+
+        assertFalse(isTransactionSuccessful);
+    }
+
+    @Test
+    public void purchasingTwoCDsSucceeds()
+    {
+        final Warehouse warehouse = new Warehouse(EXTERNAL_PROVIDER, charts);
+        final CD cd = new CD("ABC", "Artist1", 9.99);
+        warehouse.add(cd, 2);
+
+        final boolean isTransaction1Successful = warehouse.purchase(cd, 2);
+        final boolean isTransaction2Successful = warehouse.purchase(cd, 1);
+
+        assertTrue(isTransaction1Successful);
+        assertFalse(isTransaction2Successful);
+    }
+
+    @Test
+    public void purchasingMultipleCDsNotifiesCharts()
+    {
+        final Warehouse warehouse = new Warehouse(EXTERNAL_PROVIDER, charts);
+        final CD cd = new CD("ABC", "Artist1", 9.99);
+        warehouse.add(cd, 2);
+
+        warehouse.purchase(cd, 2);
+
+        verify(charts).notifyOfSale("Artist1", "ABC", 2);
+    }
+
+    @Test
+    public void top100PriceGuaranteeBy1Pound()
+    {
+        when(charts.isInTop100("Artist1", "ABC")).thenReturn(true);
+        final CD cd = new CD("ABC", "Artist1", 9.99);
+
+        final double price = cd.getPrice(charts);
+
+        assertEquals(8.99, price, 0);
+    }
+
+    @Test
+    public void priceWhenNotInTop100()
+    {
+        when(charts.isInTop100("Artist1", "ABC")).thenReturn(false);
+        final CD cd = new CD("ABC", "Artist1", 9.99);
+
+        final double price = cd.getPrice(charts);
+
+        assertEquals(9.99, price, 0);
+    }
+
+    @Test
+    public void priceGuaranteeTopCompetitorsPrice()
+    {
+        when(charts.isInTop100("Artist1", "ABC")).thenReturn(true);
+        when(charts.getLowestPrice("Artist1", "ABC")).thenReturn(8.99);
+        final CD cd = new CD("ABC", "Artist1", 9.99);
+
+        final double price = cd.getPrice(charts);
+
+        assertEquals(7.99, price, 0);
     }
 }
