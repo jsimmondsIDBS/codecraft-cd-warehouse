@@ -342,7 +342,7 @@ public class WarehouseTest
         when(charts.isInTop100("Artist1", "ABC")).thenReturn(true);
         when(charts.getLowestPrice("Artist1", "ABC")).thenReturn(0.99);
         final CD cd = new CD("ABC", "Artist1", 9.99);
-        
+
         final double price = cd.getPrice(charts);
 
         assertEquals(0.99, price, 0);

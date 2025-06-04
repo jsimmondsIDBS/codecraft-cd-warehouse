@@ -9,6 +9,7 @@ public class CD
     private final String title;
     private final String artist;
     private final double price;
+    private final GuaranteedPrice guaranteedPrice = new GuaranteedPrice();
 
     public CD(String title, String artist, double price)
     {
@@ -32,29 +33,9 @@ public class CD
         if (charts.isInTop100(artist, title))
         {
             final double competitorsPrice = charts.getLowestPrice(artist, title);
-            final double priceDifference = competitorsPrice - price;
-            if (priceDifference < 1)
-            {
-                return getGuaranteedPrice(competitorsPrice);
-            }
+            return guaranteedPrice.calculate(competitorsPrice, price, charts);
         }
 
         return price;
-    }
-
-    private double getGuaranteedPrice(double competitorsPrice)
-    {
-        if (competitorsPrice > 0 && competitorsPrice < 1)
-        {
-            return competitorsPrice;
-        }
-
-        final double guaranteedPrice = competitorsPrice - 1;
-        if (guaranteedPrice < 0)
-        {
-            return price;
-        }
-
-        return guaranteedPrice;
     }
 }
