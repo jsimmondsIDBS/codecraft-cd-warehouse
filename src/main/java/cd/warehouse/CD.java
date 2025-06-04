@@ -44,6 +44,11 @@ public class CD
 
     private double getGuaranteedPrice(double competitorsPrice)
     {
+        if (competitorsPrice > 0 && competitorsPrice < 1)
+        {
+            return competitorsPrice;
+        }
+
         final double guaranteedPrice = competitorsPrice - 1;
         if (guaranteedPrice < 0)
         {
