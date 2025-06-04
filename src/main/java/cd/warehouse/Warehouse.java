@@ -31,6 +31,12 @@ public class Warehouse
         stock.add(cd, quantity);
     }
 
+    public CD search(String value) {
+        return getListing().stream()
+                .filter(cd -> cd.getArtist().equals(value) || cd.getTitle().equals(value))
+                .findFirst().orElse(null);
+    }
+
     public CD searchByTitle(String title)
     {
         return getListing().stream()
@@ -51,8 +57,8 @@ public class Warehouse
     {
         if (stock.isInStock(cd))
         {
-            final boolean isTransactionSuccessful = externalProvider.processPayment();
-            if (!isTransactionSuccessful)
+            final boolean isPaymentSuccessful = externalProvider.processPayment();
+            if (!isPaymentSuccessful)
             {
                 return false;
             }
@@ -63,5 +69,6 @@ public class Warehouse
 
         return false;
     }
+
 
 }

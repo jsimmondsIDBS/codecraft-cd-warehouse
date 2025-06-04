@@ -70,7 +70,7 @@ public class WarehouseTest
         final Warehouse warehouse = new Warehouse(EXTERNAL_PROVIDER);
         warehouse.add(new CD("ABC", "Artist1"));
 
-        final CD result = warehouse.searchByTitle("ABC");
+        final CD result = warehouse.search("ABC");
 
         assertEquals("ABC", result.getTitle());
     }
@@ -82,7 +82,7 @@ public class WarehouseTest
         warehouse.add(new CD("XYZ", "Artist2"));
         warehouse.add(new CD("ABC", "Artist1"));
 
-        final CD result = warehouse.searchByTitle("ABC");
+        final CD result = warehouse.search("ABC");
 
         assertEquals("ABC", result.getTitle());
     }
@@ -93,7 +93,7 @@ public class WarehouseTest
         final Warehouse warehouse = new Warehouse(EXTERNAL_PROVIDER);
         warehouse.add(new CD("ABC", "Artist1"));
 
-        final CD result = warehouse.searchByTitle("DEF");
+        final CD result = warehouse.search("DEF");
 
         assertNull(result);
     }
@@ -104,7 +104,7 @@ public class WarehouseTest
         final Warehouse warehouse = new Warehouse(EXTERNAL_PROVIDER);
         warehouse.add(new CD("ABC", "Artist1"));
 
-        final CD result = warehouse.searchByArtist("DEF");
+        final CD result = warehouse.search("DEF");
 
         assertNull(result);
     }
@@ -115,9 +115,21 @@ public class WarehouseTest
         final Warehouse warehouse = new Warehouse(EXTERNAL_PROVIDER);
         warehouse.add(new CD("ABC", "Artist1"));
 
-        final CD result = warehouse.searchByArtist("Artist1");
+        final CD result = warehouse.search("Artist1");
 
         assertEquals("Artist1", result.getArtist());
+    }
+
+    @Test
+    public void search() {
+        final Warehouse warehouse = new Warehouse(EXTERNAL_PROVIDER);
+        warehouse.add(new CD("ABC", "Artist1"));
+        warehouse.add(new CD("XYZ", "Artist2"));
+
+        final CD result = warehouse.search("XYZ");
+
+        assertEquals("Artist2", result.getArtist());
+
     }
 
     @Test
