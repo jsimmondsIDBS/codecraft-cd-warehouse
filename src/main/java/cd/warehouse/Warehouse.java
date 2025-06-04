@@ -4,18 +4,16 @@
  */
 package cd.warehouse;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class CDListing
+public class Warehouse
 {
     private final Map<CD, Integer> stock = new HashMap<>();
     private final ExternalProvider externalProvider;
 
-    public CDListing(ExternalProvider externalProvider)
+    public Warehouse(ExternalProvider externalProvider)
     {
         this.externalProvider = externalProvider;
     }
