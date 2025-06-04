@@ -31,13 +31,20 @@ public class CD
     {
         if (charts.isInTop100(artist, title))
         {
-            final double lowestPrice = charts.getLowestPrice(artist, title);
+            final double competitorsPrice = charts.getLowestPrice(artist, title);
+            final double difference = competitorsPrice - price;
 
-            if (lowestPrice == 0 || lowestPrice > price)
+            if (difference < 1)
             {
-                return price - 1;
+                double tempPrice = competitorsPrice - 1;
+                if (tempPrice < 0)
+                {
+                    return price;
+                }
+
+                return tempPrice;
             }
-            return lowestPrice - 1;
+
         }
 
         return price;

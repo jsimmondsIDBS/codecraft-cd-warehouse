@@ -291,14 +291,14 @@ public class WarehouseTest
     }
 
     @Test
-    public void top100PriceGuaranteeBy1Pound()
+    public void inTop100NoCompetitorPrice()
     {
         when(charts.isInTop100("Artist1", "ABC")).thenReturn(true);
         final CD cd = new CD("ABC", "Artist1", 9.99);
 
         final double price = cd.getPrice(charts);
 
-        assertEquals(8.99, price, 0);
+        assertEquals(9.99, price, 0);
     }
 
     @Test
@@ -322,5 +322,17 @@ public class WarehouseTest
         final double price = cd.getPrice(charts);
 
         assertEquals(7.99, price, 0);
+    }
+
+    @Test
+    public void priceGuaranteeTopCompetitorsPriceHigherThanOurs()
+    {
+        when(charts.isInTop100("Artist1", "ABC")).thenReturn(true);
+        when(charts.getLowestPrice("Artist1", "ABC")).thenReturn(10.0);
+        final CD cd = new CD("ABC", "Artist1", 9.99);
+
+        final double price = cd.getPrice(charts);
+
+        assertEquals(9.0, price, 0);
     }
 }
