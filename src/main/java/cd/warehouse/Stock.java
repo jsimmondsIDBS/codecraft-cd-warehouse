@@ -38,7 +38,6 @@ public class Stock {
                 .toList();
     }
 
-
     boolean isInStock(CD cd) {
         return this.stock.containsKey(cd) && this.stock.get(cd) > 0;
     }

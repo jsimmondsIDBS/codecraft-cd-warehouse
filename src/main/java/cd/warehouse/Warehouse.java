@@ -49,8 +49,7 @@ public class Warehouse
 
     public boolean purchase(CD cd)
     {
-        final boolean isCDInStock = stock.isInStock(cd);
-        if (isCDInStock)
+        if (stock.isInStock(cd))
         {
             final boolean isTransactionSuccessful = externalProvider.processPayment();
             if (!isTransactionSuccessful)
@@ -65,13 +64,4 @@ public class Warehouse
         return false;
     }
 
-    private void incrementStock(CD cd)
-    {
-        stock.increment(cd);
-    }
-
-    private void decrementStock(CD cd)
-    {
-        stock.decrement(cd);
-    }
 }
