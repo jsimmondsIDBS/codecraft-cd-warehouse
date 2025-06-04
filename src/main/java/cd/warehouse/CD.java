@@ -32,21 +32,24 @@ public class CD
         if (charts.isInTop100(artist, title))
         {
             final double competitorsPrice = charts.getLowestPrice(artist, title);
-            final double difference = competitorsPrice - price;
-
-            if (difference < 1)
+            final double priceDifference = competitorsPrice - price;
+            if (priceDifference < 1)
             {
-                double tempPrice = competitorsPrice - 1;
-                if (tempPrice < 0)
-                {
-                    return price;
-                }
-
-                return tempPrice;
+                return getGuaranteedPrice(competitorsPrice);
             }
-
         }
 
         return price;
+    }
+
+    private double getGuaranteedPrice(double competitorsPrice)
+    {
+        final double guaranteedPrice = competitorsPrice - 1;
+        if (guaranteedPrice < 0)
+        {
+            return price;
+        }
+
+        return guaranteedPrice;
     }
 }
