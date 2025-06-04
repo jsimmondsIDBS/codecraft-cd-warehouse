@@ -34,7 +34,7 @@ public class Stock {
 
     public List<CD> getItemsInStock() {
         return stock.keySet().stream()
-                .filter(cd -> stock.get(cd) > 0)
+                .filter(this::isInStock)
                 .toList();
     }
 
