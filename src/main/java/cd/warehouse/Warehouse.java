@@ -37,22 +37,6 @@ public class Warehouse
                 .findFirst().orElse(null);
     }
 
-    public CD searchByTitle(String title)
-    {
-        return getListing().stream()
-                .filter(cd -> cd.getTitle().equals(title))
-                .findFirst()
-                .orElse(null);
-    }
-
-    public CD searchByArtist(String artist)
-    {
-        return getListing().stream()
-                .filter(cd -> cd.getArtist().equals(artist))
-                .findFirst()
-                .orElse(null);
-    }
-
     public boolean purchase(CD cd)
     {
         if (stock.isInStock(cd))
