@@ -18,7 +18,7 @@ public class Warehouse
         this.externalProvider = externalProvider;
     }
 
-    public List<CD> get()
+    public List<CD> getListing()
     {
         return stock.keySet().stream()
                 .filter(cd -> stock.get(cd) > 0)
@@ -47,7 +47,7 @@ public class Warehouse
 
     public CD searchByTitle(String title)
     {
-        return get().stream()
+        return getListing().stream()
                 .filter(cd -> cd.getTitle().equals(title))
                 .findFirst()
                 .orElse(null);
@@ -55,7 +55,7 @@ public class Warehouse
 
     public CD searchByArtist(String artist)
     {
-        return get().stream()
+        return getListing().stream()
                 .filter(cd -> cd.getArtist().equals(artist))
                 .findFirst()
                 .orElse(null);
@@ -66,7 +66,7 @@ public class Warehouse
         final boolean isCDInStock = stock.containsKey(cd) && stock.get(cd) > 0;
         if (isCDInStock)
         {
-            final boolean isTransactionSuccessful = externalProvider.transaction();
+            final boolean isTransactionSuccessful = externalProvider.processPayment();
             if (!isTransactionSuccessful)
             {
                 return false;

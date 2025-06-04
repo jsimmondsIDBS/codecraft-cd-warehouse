@@ -6,5 +6,5 @@ package cd.warehouse;
 
 public interface ExternalProvider
 {
-    boolean transaction();
+    boolean processPayment();
 }

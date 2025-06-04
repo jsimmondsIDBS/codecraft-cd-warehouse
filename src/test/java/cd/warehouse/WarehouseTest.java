@@ -18,7 +18,7 @@ public class WarehouseTest
     private final ExternalProvider EXTERNAL_PROVIDER = new ExternalProvider()
     {
         @Override
-        public boolean transaction()
+        public boolean processPayment()
         {
             return true;
         }
@@ -28,7 +28,7 @@ public class WarehouseTest
     public void testEmptyListing()
     {
         final Warehouse warehouse = new Warehouse(EXTERNAL_PROVIDER);
-        assertEquals(0, warehouse.get().size());
+        assertEquals(0, warehouse.getListing().size());
     }
 
     @Test
@@ -36,23 +36,23 @@ public class WarehouseTest
     {
         final Warehouse warehouse = new Warehouse(EXTERNAL_PROVIDER);
         warehouse.add(new CD("ABC", "Artist1"));
-        assertEquals(1, warehouse.get().size());
+        assertEquals(1, warehouse.getListing().size());
     }
 
     @Test
-    public void canGetTitleFromCDInListing()
+    public void canGetListingTitleFromCDInListing()
     {
         final Warehouse warehouse = new Warehouse(EXTERNAL_PROVIDER);
         warehouse.add(new CD("ABC", "Artist1"));
-        assertEquals("ABC", warehouse.get().get(0).getTitle());
+        assertEquals("ABC", warehouse.getListing().get(0).getTitle());
     }
 
     @Test
-    public void canGetArtistFromCDInListing()
+    public void canGetListingArtistFromCDInListing()
     {
         final Warehouse warehouse = new Warehouse(EXTERNAL_PROVIDER);
         warehouse.add(new CD("ABC", "Artist1"));
-        assertEquals("Artist1", warehouse.get().get(0).getArtist());
+        assertEquals("Artist1", warehouse.getListing().get(0).getArtist());
     }
 
     @Test
@@ -61,7 +61,7 @@ public class WarehouseTest
         final Warehouse warehouse = new Warehouse(EXTERNAL_PROVIDER);
         warehouse.add(new CD("ABC", "Artist1"));
         warehouse.add(new CD("XYZ", "Artist2"));
-        assertEquals(2, warehouse.get().size());
+        assertEquals(2, warehouse.getListing().size());
     }
 
     @Test
@@ -153,7 +153,7 @@ public class WarehouseTest
         warehouse.add(cd);
         warehouse.purchase(cd);
 
-        final List<CD> cds = warehouse.get();
+        final List<CD> cds = warehouse.getListing();
 
         assertEquals(0, cds.size());
     }
@@ -167,7 +167,7 @@ public class WarehouseTest
         warehouse.add(cd);
         warehouse.purchase(cd);
 
-        final List<CD> cds = warehouse.get();
+        final List<CD> cds = warehouse.getListing();
 
         assertEquals(cd, cds.get(0));
     }
@@ -182,7 +182,7 @@ public class WarehouseTest
         warehouse.add(cd);
         warehouse.purchase(cd);
 
-        final List<CD> cds = warehouse.get();
+        final List<CD> cds = warehouse.getListing();
 
         assertEquals(1, cds.size());
     }
@@ -209,7 +209,7 @@ public class WarehouseTest
         final ExternalProvider externalProvider = new ExternalProvider()
         {
             @Override
-            public boolean transaction()
+            public boolean processPayment()
             {
                 return false;
             }
