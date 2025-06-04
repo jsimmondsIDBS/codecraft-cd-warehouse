@@ -4,14 +4,12 @@
  */
 package cd.warehouse;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class Warehouse
 {
-    private final Map<CD, Integer> stock = new HashMap<>();
     private final ExternalProvider externalProvider;
+    private final Stock stock = new Stock();
 
     public Warehouse(ExternalProvider externalProvider)
     {
@@ -20,29 +18,17 @@ public class Warehouse
 
     public List<CD> getListing()
     {
-        return stock.keySet().stream()
-                .filter(cd -> stock.get(cd) > 0)
-                .toList();
+        return stock.getItemsInStock();
     }
 
     public void add(CD cd)
     {
-        if (!stock.containsKey(cd))
-        {
-            stock.put(cd, 1);
-        }
-        else
-        {
-            incrementStock(cd);
-        }
+        stock.add(cd);
     }
 
     public void add(CD cd, int quantity)
     {
-        for (int i = 0; i < quantity; i++)
-        {
-            add(cd);
-        }
+        stock.add(cd, quantity);
     }
 
     public CD searchByTitle(String title)
@@ -63,7 +49,7 @@ public class Warehouse
 
     public boolean purchase(CD cd)
     {
-        final boolean isCDInStock = stock.containsKey(cd) && stock.get(cd) > 0;
+        final boolean isCDInStock = stock.isInStock(cd);
         if (isCDInStock)
         {
             final boolean isTransactionSuccessful = externalProvider.processPayment();
@@ -72,7 +58,7 @@ public class Warehouse
                 return false;
             }
 
-            decrementStock(cd);
+            stock.decrement(cd);
             return true;
         }
 
@@ -81,11 +67,11 @@ public class Warehouse
 
     private void incrementStock(CD cd)
     {
-        stock.compute(cd, (k, currentStockCount) -> currentStockCount + 1);
+        stock.increment(cd);
     }
 
     private void decrementStock(CD cd)
     {
-        stock.compute(cd, (k, currentStockCount) -> currentStockCount - 1);
+        stock.decrement(cd);
     }
 }
